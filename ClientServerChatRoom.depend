@@ -1,0 +1,28 @@
+# depslib dependency file v1.0
+1521746440 source:c:\users\alex\desktop\comp4981\asn3\clientserverchatroom\client.cpp
+	"Client.h"
+
+1521746061 c:\users\alex\desktop\comp4981\asn3\clientserverchatroom\client.h
+	"SharedUtils.h"
+
+1521749651 c:\users\alex\desktop\comp4981\asn3\clientserverchatroom\sharedutils.h
+	<cstring>
+	<cstdlib>
+	<unistd.h>
+	<iostream>
+	<fstream>
+	<thread>
+
+1521746019 source:c:\users\alex\desktop\comp4981\asn3\clientserverchatroom\main.cpp
+	"Client.h"
+	"Server.h"
+
+1521746428 c:\users\alex\desktop\comp4981\asn3\clientserverchatroom\server.h
+	"SharedUtils.h"
+
+1521746460 source:c:\users\alex\desktop\comp4981\asn3\clientserverchatroom\server.cpp
+	"Server.h"
+
+1521749629 source:c:\users\alex\desktop\comp4981\asn3\clientserverchatroom\sharedutils.cpp
+	"SharedUtils.h"
+
