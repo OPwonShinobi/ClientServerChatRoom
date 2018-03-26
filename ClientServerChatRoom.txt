@@ -1,1 +1,1 @@
-./Debug/Client.cpp.o ./Debug/main.cpp.o ./Debug/Server.cpp.o ./Debug/SharedUtils.cpp.o
+./Debug/main.cpp.o ./Debug/SharedUtils.cpp.o ./Debug/Server.cpp.o ./Debug/Client.cpp.o

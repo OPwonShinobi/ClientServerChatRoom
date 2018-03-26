@@ -62,7 +62,7 @@ AS       := C:/cygwin64/bin/x86_64-pc-cygwin-as.exe
 ## User defined environment variables
 ##
 CodeLiteDir:=C:\Program Files\CodeLite
-Objects0=$(IntermediateDirectory)/Client.cpp$(ObjectSuffix) $(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/Server.cpp$(ObjectSuffix) $(IntermediateDirectory)/SharedUtils.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/SharedUtils.cpp$(ObjectSuffix) $(IntermediateDirectory)/Server.cpp$(ObjectSuffix) $(IntermediateDirectory)/Client.cpp$(ObjectSuffix) 
 
 
 
@@ -93,14 +93,6 @@ PreBuild:
 ##
 ## Objects
 ##
-$(IntermediateDirectory)/Client.cpp$(ObjectSuffix): Client.cpp $(IntermediateDirectory)/Client.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/Alex/Desktop/COMP4981/asn3/ClientServerChatRoom/Client.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Client.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/Client.cpp$(DependSuffix): Client.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Client.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/Client.cpp$(DependSuffix) -MM Client.cpp
-
-$(IntermediateDirectory)/Client.cpp$(PreprocessSuffix): Client.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Client.cpp$(PreprocessSuffix) Client.cpp
-
 $(IntermediateDirectory)/main.cpp$(ObjectSuffix): main.cpp $(IntermediateDirectory)/main.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/Alex/Desktop/COMP4981/asn3/ClientServerChatRoom/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/main.cpp$(DependSuffix): main.cpp
@@ -108,6 +100,14 @@ $(IntermediateDirectory)/main.cpp$(DependSuffix): main.cpp
 
 $(IntermediateDirectory)/main.cpp$(PreprocessSuffix): main.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/main.cpp$(PreprocessSuffix) main.cpp
+
+$(IntermediateDirectory)/SharedUtils.cpp$(ObjectSuffix): SharedUtils.cpp $(IntermediateDirectory)/SharedUtils.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/Alex/Desktop/COMP4981/asn3/ClientServerChatRoom/SharedUtils.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/SharedUtils.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/SharedUtils.cpp$(DependSuffix): SharedUtils.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/SharedUtils.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/SharedUtils.cpp$(DependSuffix) -MM SharedUtils.cpp
+
+$(IntermediateDirectory)/SharedUtils.cpp$(PreprocessSuffix): SharedUtils.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/SharedUtils.cpp$(PreprocessSuffix) SharedUtils.cpp
 
 $(IntermediateDirectory)/Server.cpp$(ObjectSuffix): Server.cpp $(IntermediateDirectory)/Server.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/Alex/Desktop/COMP4981/asn3/ClientServerChatRoom/Server.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Server.cpp$(ObjectSuffix) $(IncludePath)
@@ -117,13 +117,13 @@ $(IntermediateDirectory)/Server.cpp$(DependSuffix): Server.cpp
 $(IntermediateDirectory)/Server.cpp$(PreprocessSuffix): Server.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Server.cpp$(PreprocessSuffix) Server.cpp
 
-$(IntermediateDirectory)/SharedUtils.cpp$(ObjectSuffix): SharedUtils.cpp $(IntermediateDirectory)/SharedUtils.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/Alex/Desktop/COMP4981/asn3/ClientServerChatRoom/SharedUtils.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/SharedUtils.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/SharedUtils.cpp$(DependSuffix): SharedUtils.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/SharedUtils.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/SharedUtils.cpp$(DependSuffix) -MM SharedUtils.cpp
+$(IntermediateDirectory)/Client.cpp$(ObjectSuffix): Client.cpp $(IntermediateDirectory)/Client.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/Users/Alex/Desktop/COMP4981/asn3/ClientServerChatRoom/Client.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Client.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/Client.cpp$(DependSuffix): Client.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Client.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/Client.cpp$(DependSuffix) -MM Client.cpp
 
-$(IntermediateDirectory)/SharedUtils.cpp$(PreprocessSuffix): SharedUtils.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/SharedUtils.cpp$(PreprocessSuffix) SharedUtils.cpp
+$(IntermediateDirectory)/Client.cpp$(PreprocessSuffix): Client.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Client.cpp$(PreprocessSuffix) Client.cpp
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)

@@ -8,7 +8,8 @@ class Server
         Server();
         virtual ~Server();
 
-    private:
+	private:
+		void SelectLoop(int);
 };
 
 #endif // SERVER_H
