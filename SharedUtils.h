@@ -4,13 +4,21 @@
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/select.h>
+#include <netinet/in.h>
+
 #include <iostream>
 #include <fstream>
 #include <thread>
-//#include "mesg.h"
+
 
 using namespace std;
 
-string PromptForInput(const string );
+string PromptForString(const string msg);
+int PromptForInteger(const string msg);
+void PrintWelcomeMessage(const string mode);
 
+void Die(const string message);
 #endif
