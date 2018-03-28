@@ -4,11 +4,16 @@
 
 class Client
 {
-    public:
-        Client();
-        virtual ~Client();
+public:
+	Client();
+	virtual ~Client();
 
-    private:
+private:
+	void SelectLoop(const int);
+	bool HandleNewline(const int);
+	void ReadServerMessage(const int);
+
+	bool keepSelecting = true;
 };
 
 #endif // CLIENT_H

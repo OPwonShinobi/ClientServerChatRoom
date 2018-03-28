@@ -31,7 +31,7 @@ int main(void)
 {
 	while(true)
 	{
-		string input = PromptForString("* Server or client mode [S/C], or E to exit:");
+		string input = PromptForString("* Server or client mode [S/C], or E to exit: ");
 		if (tolower(input[0]) == 's')
 		{
 			Server server;
