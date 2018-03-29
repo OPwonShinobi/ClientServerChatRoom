@@ -1,7 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
+#include <errno.h>
 #include "SharedUtils.h"
-
 class Client
 {
 public:
@@ -14,6 +14,7 @@ private:
 	void ReadServerMessage(const int);
 
 	bool keepSelecting = true;
+	ofstream chatLogFile;
 };
 
 #endif // CLIENT_H

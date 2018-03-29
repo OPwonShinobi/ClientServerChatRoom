@@ -21,15 +21,19 @@ Client::Client()
 	// memcpy(serverHostent->h_addr, (char *)&serverInetAddress.sin_addr, serverHostent->h_length); 
 	// ^ connect error: Address family not supported by protocol
 
-	// Connecting to the server
-	if (connect (serverSocket, (struct sockaddr *)&serverInetAddress, sizeof(serverInetAddress)) == -1)
+	// Connecting to the server (this blocks)
+	if ( connect (serverSocket, (struct sockaddr *)&serverInetAddress, sizeof(serverInetAddress)) < 0)
 		Die("Failed to connect to server");
-	
 	fcntl(serverSocket, F_SETFL, O_NONBLOCK);
-	PrintWelcomeMessage("CLIENT", serverHostent->h_name);
+	
+	string fileName = PromptForChatlog();
+	if (fileName != "")
+		chatLogFile.open(fileName);
+		
+	PrintWelcomeMessage("CLIENT", serverHostent->h_name, chatLogFile.is_open());
 	
 	thread clientThread(&Client::SelectLoop, this, serverSocket);
-	while(this->HandleNewline(serverSocket))
+	while(this->HandleNewline(serverSocket));
 	
 	keepSelecting = false;
 	clientThread.join();
@@ -39,18 +43,20 @@ Client::Client()
 void Client::SelectLoop(const int serverSocket)
 {
 	fd_set serverSocketSet; //server socket is only socket in this set
+	fd_set tempSocketSet;
+	FD_ZERO(&serverSocketSet);
+	FD_SET(serverSocket, &serverSocketSet);
 	while (keepSelecting)
 	{
-	 	FD_ZERO(&serverSocketSet);
-	   	FD_SET(serverSocket, &serverSocketSet);
+	 	tempSocketSet = serverSocketSet;
 		struct timeval timeout;
 		timeout.tv_sec = 2;             
 		timeout.tv_usec = 0;
 
-		select(serverSocket + 1, &serverSocketSet, NULL, NULL, &timeout);
+		select(serverSocket + 1, &tempSocketSet, NULL, NULL, &timeout);
 
 		// stuff to read from server
-		if (FD_ISSET(serverSocket, &serverSocketSet)) 
+		if (FD_ISSET(serverSocket, &tempSocketSet)) 
 			this->ReadServerMessage(serverSocket);
 	}
 }
@@ -85,7 +91,10 @@ bool Client::HandleNewline(const int serverSocket)
 	}
 	else
 	{
-		SendPacket(serverSocket, line);
+		string noIpInfoPacket = GetTimestampedPacket(line);
+		SendPacket(serverSocket, noIpInfoPacket);
+		if (chatLogFile.is_open())
+			chatLogFile << "<Me>" << noIpInfoPacket << endl;
 	}
 	return true;
 }
@@ -105,8 +114,10 @@ void Client::ReadServerMessage(const int serverSocket)
 	} 
 	if (bytesTotalRead > 0)
 	{
-		//    v this should be in the packet already
-		cout << "<otherClientIP>:" << recvBuffer << endl;
+		// packet should be this format: <198.98.62.21><10:58:44>hello world
+		cout << recvBuffer << endl;
+		if (chatLogFile.is_open())
+			chatLogFile << recvBuffer << endl;
 	}
 	else 
 	{

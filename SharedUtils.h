@@ -1,9 +1,7 @@
 #ifndef SHARED_UTILS_H
 #define SHARED_UTILS_H
 
-#ifndef BUFLEN
 #define BUFLEN 255
-#endif
 
 #include <cstring>
 #include <cstdlib>
@@ -27,10 +25,16 @@ using namespace std;
 
 string PromptForString(const string);
 int PromptForInteger(const string);
-void PrintWelcomeMessage(const string, const string);
+string PromptForChatlog();
+
+void PrintWelcomeMessage(const string, const string, const bool);
 void PrintHelpMessage();
 
 string GetCurrentIP(); // may need to remove
 void Die(const string message);
-void SendPacket(int, string);
+void SendPacket(const int, const string);
+string GetTimeString();
+string GetIpFromPacket(const string);
+string GetIpedPacket(const string, const string);
+string GetTimestampedPacket(const string);
 #endif

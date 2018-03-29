@@ -17,11 +17,13 @@ class Server
 	private:
 		void SelectLoop(const int);
 		int AddNewClient(const int, ClientInfo*);
-		int ReadClientMessage(const int, vector<string>&);
+		int ReadClientMessage(const int, ClientInfo*, vector<string>&);
 		void BroadCastMessages(ClientInfo*, vector<string>&);
 		bool HandleCommand();
+		int GetFileDescIndex(const int, ClientInfo*);
 		
 		bool keepSelecting = true;
+		ofstream chatLogFile;
 };
 
 #endif // SERVER_H
