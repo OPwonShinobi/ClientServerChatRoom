@@ -27,7 +27,7 @@ string PromptForString(const string);
 int PromptForInteger(const string);
 string PromptForChatlog();
 
-void PrintWelcomeMessage(const string, const string, const bool);
+void PrintWelcomeMessage(const string, const bool, const string, const string, const int);
 void PrintHelpMessage();
 
 string GetCurrentIP(); // may need to remove

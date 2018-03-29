@@ -31,7 +31,7 @@ Server::Server()
 		chatLogFile.open(fileName);
 
 	listen(listenSocket, BACKLOG);
-	PrintWelcomeMessage("SERVER", GetCurrentIP(), chatLogFile.is_open());
+	PrintWelcomeMessage("SERVER", chatLogFile.is_open(), GetCurrentIP(), GetCurrentIP(), port);
 	thread serverThread(&Server::SelectLoop, this, listenSocket);
 	while(this->HandleCommand());
 	keepSelecting = false;
@@ -42,12 +42,11 @@ Server::Server()
 void Server::SelectLoop(const int listenSocket)
 {
 	int lastAllocFileDesc = listenSocket;
-   	// int lastAllocIndex = -1; // no point
 
-   	// runs 4096 times
-	// int clientList[FD_SETSIZE]; 
+   	// can run 4096 times on some machines
 	// does not incl. listen socket. indexes are fileDescValue - 4 *only if not localhost, use GetFileDescIndex instead
 	ClientInfo clientList[FD_SETSIZE];
+	this->connectedList = clientList;
 	for (int i = 0; i < FD_SETSIZE; i++)
 		clientList[i].FileDesc = -1;             // -1 indicates available entry
 
@@ -75,7 +74,7 @@ void Server::SelectLoop(const int listenSocket)
 			if (--readReadyCount <= 0)
 				continue;	
 		}
-		vector<string> setOfMessages;
+		vector<string> listOfPackets;
 		// read all clients data so fds are write ready
 		int lastAllocFileDescIndex = this->GetFileDescIndex(lastAllocFileDesc, clientList);
 		for (int i = 0; i <= lastAllocFileDescIndex; i++)
@@ -86,7 +85,7 @@ void Server::SelectLoop(const int listenSocket)
 
 			if (FD_ISSET(clientSocket, &readFileDescSet))
 			{
-				int bytesJustRead = this->ReadClientMessage(clientSocket, clientList, setOfMessages);
+				int bytesJustRead = this->ReadClientMessage(clientSocket, clientList, listOfPackets);
 				if (bytesJustRead == 0) // connection closed by client
 				{
 					int clientSocketIndex = this->GetFileDescIndex(clientSocket, clientList);
@@ -103,7 +102,7 @@ void Server::SelectLoop(const int listenSocket)
 			} //endif
 		} // endfor
 		// write to all clients
-		this->BroadCastMessages(clientList, setOfMessages);						            				
+		this->BroadcastMessages(clientList, listOfPackets);						            				
    	} //endwhile
 }
 
@@ -141,7 +140,7 @@ int Server::AddNewClient(const int listenSocket, ClientInfo* clientList)
 	return clientSocket;
 }
 
-int Server::ReadClientMessage(const int clientSocket, ClientInfo* clientList, vector<string>& setOfMessages)
+int Server::ReadClientMessage(const int clientSocket, ClientInfo* clientList, vector<string>& listOfPackets)
 {
 	int packetBytesRemaining = BUFLEN; //used for setting read size
 	int bytesJustRead; // used for ++bufferTail
@@ -160,17 +159,17 @@ int Server::ReadClientMessage(const int clientSocket, ClientInfo* clientList, ve
 		string noIpInfoPacket = string(recvBuffer);
 		int clientSocketIndex = this->GetFileDescIndex(clientSocket, clientList);
 		string completedPacket = GetIpedPacket(clientList[clientSocketIndex].IpAddress, noIpInfoPacket);
-		setOfMessages.push_back(completedPacket); 
+		listOfPackets.push_back(completedPacket); 
 	}
 	//string constructor is deep copy, this is fine
 	free(recvBuffer); 
 	return bytesTotalRead;
 }
 
-void Server::BroadCastMessages(ClientInfo* clientList, vector<string>& setOfMessages)
+void Server::BroadcastMessages(ClientInfo* clientList, vector<string>& listOfPackets)
 {	
 	//cant go in forloop sadly
-	for (vector<string>::iterator msg = setOfMessages.begin() ; msg != setOfMessages.end(); ++msg)
+	for (vector<string>::iterator msg = listOfPackets.begin() ; msg != listOfPackets.end(); ++msg)
 	{
 		//another for loop thru each client here
 		for (int i = 0; i < FD_SETSIZE; ++i)
@@ -191,7 +190,7 @@ void Server::BroadCastMessages(ClientInfo* clientList, vector<string>& setOfMess
 			}			
 		}
 	}	
-	setOfMessages.clear();
+	listOfPackets.clear();
 }
 
 bool Server::HandleCommand()
@@ -215,6 +214,17 @@ bool Server::HandleCommand()
 		else if (cmd == "/exit")
 		{
 			cout << "* Please /disconnect first. " << endl;		
+		}
+		else if (cmd == "/clients")
+		{
+			if (this->connectedList != nullptr)
+				for(int i = 0; i < FD_SETSIZE; ++i)
+				{
+					if (connectedList[i].FileDesc != -1 )
+						cout << "- " << connectedList[i].IpAddress << endl;
+				}
+			else 
+				cout << "No clients connected" << endl;
 		}
 		else
 		{

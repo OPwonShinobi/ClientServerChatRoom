@@ -18,12 +18,13 @@ class Server
 		void SelectLoop(const int);
 		int AddNewClient(const int, ClientInfo*);
 		int ReadClientMessage(const int, ClientInfo*, vector<string>&);
-		void BroadCastMessages(ClientInfo*, vector<string>&);
+		void BroadcastMessages(ClientInfo*, vector<string>&);
 		bool HandleCommand();
 		int GetFileDescIndex(const int, ClientInfo*);
 		
 		bool keepSelecting = true;
 		ofstream chatLogFile;
+		ClientInfo* connectedList;
 };
 
 #endif // SERVER_H

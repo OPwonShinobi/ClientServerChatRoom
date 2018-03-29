@@ -30,8 +30,8 @@ Client::Client()
 	if (fileName != "")
 		chatLogFile.open(fileName);
 		
-	PrintWelcomeMessage("CLIENT", serverHostent->h_name, chatLogFile.is_open());
-	
+	//PrintWelcomeMessage("CLIENT", serverHostent->h_name, chatLogFile.is_open());
+	PrintWelcomeMessage("CLIENT", chatLogFile.is_open(), serverHostent->h_name, GetCurrentIP(), serverPort);
 	thread clientThread(&Client::SelectLoop, this, serverSocket);
 	while(this->HandleNewline(serverSocket));
 	

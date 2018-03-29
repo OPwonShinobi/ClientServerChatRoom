@@ -19,8 +19,8 @@ string PromptForChatlog()
 		string input = PromptForString("(Do you want to save a chatlog? [y/n]):");
 		if (tolower(input[0]) == 'y')
 		{
-			string fileName = PromptForString("(Enter a filename, or space for default:)");
-			if (fileName.find_first_not_of(' ') == string::npos)
+			string fileName = PromptForString("(Enter a filename, or . for ChatLog.txt:)");
+			if (fileName[0] == '.')
 				return "ChatLog.txt";
 			else
 				return fileName;
@@ -51,20 +51,23 @@ string PromptForString(const string msg)
 /* connect by default */
 /* only print this after connected */
 /* mode: "Client" or "Server". Should be enum but thats harder to read */
-void PrintWelcomeMessage(const string mode, const string ip, const bool chatlogOn)
+void PrintWelcomeMessage(const string mode, const bool chatlogOn, const string hostIp, const string userIP, const int port)
 {
 	cout << "*******************************************************************************" << endl;
 	cout << "* Welcome to chat room console. " << endl;
-	cout << "* Current status: connected as "<< mode << ". Room host ip:" + ip << endl;
-	cout << "* Session is being logged: " << (chatlogOn?"TRUE":"FALSE") << endl;
+	cout << "* Current status: " << endl;
+	cout << "* 	connected as "<< mode << ", user ip: "<< userIP << endl;
+	cout << "*	Room hosted at:" + hostIp << " on port:" << port << endl;
+	if (chatlogOn)
+		cout << "*	A chat log is saved in the current directory." << endl;
+	if (!chatlogOn)	
+		cout << "*	Chat log is not being saved." << endl;
 	cout << "* Enter /help to display this message again." << endl;
 	cout << "* Enter /disconnect to return to start and choose a different mode" << endl;
 	if (mode == "CLIENT")
 		cout << "* Enter anything else to send it to other clients." << endl;
 	if (mode == "SERVER")
 		cout << "* Note, entering messages as server does nothing." << endl;
-	if (chatlogOn)
-		cout << "* A chat log is saved in the current directory." << endl;
 	cout << "*******************************************************************************" << endl;
 }
 
@@ -88,6 +91,8 @@ void SendPacket(const int socketFileDesc, const string packet)
 	send(socketFileDesc, packet.c_str(), BUFLEN, 0);
 }
 
+/* https://stackoverflow.com/questions/20800319/how-do-i-get-my-ip-address-in-c-on-linux 
+ * thx 2 brm */
 string GetCurrentIP()
 {
 	struct ifaddrs *addrs, *tmp;;
