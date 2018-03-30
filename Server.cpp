@@ -25,7 +25,7 @@ Server::Server()
 	// tcp calls for bind b4 accept
 	if (bind(listenSocket, (struct sockaddr *)&serverInetAddress, sizeof(serverInetAddress)) == -1)
 		Die("Failed to bind listenSocket to port:" + port);
-	
+
 	string fileName = PromptForChatlog();
 	if (fileName != "")
 		chatLogFile.open(fileName);
@@ -58,13 +58,13 @@ void Server::SelectLoop(const int listenSocket)
 	{
    		readFileDescSet = allFileDescSet;               // structure assignment
 		struct timeval timeout;
-		timeout.tv_sec = 0;             
+		timeout.tv_sec = 0;
 		timeout.tv_usec = 10;
 
 		int readReadyCount = select(lastAllocFileDesc + 1, &readFileDescSet, NULL, NULL, &timeout);
 
 		// if listenSocket is in set of readReady fds, a new client needs to be accepted
-		if (FD_ISSET(listenSocket, &readFileDescSet))  
+		if (FD_ISSET(listenSocket, &readFileDescSet))
 		{
 			int newClientFileDesc = this->AddNewClient(listenSocket, clientList);
 			FD_SET (newClientFileDesc, &allFileDescSet);     // add new descriptor to set
@@ -72,7 +72,7 @@ void Server::SelectLoop(const int listenSocket)
 				lastAllocFileDesc = newClientFileDesc;
 			// no more readable descriptors
 			if (--readReadyCount <= 0)
-				continue;	
+				continue;
 		}
 		vector<string> listOfPackets;
 		// read all clients data so fds are write ready
@@ -95,14 +95,14 @@ void Server::SelectLoop(const int listenSocket)
 					close(clientSocket);
 					FD_CLR(clientSocket, &allFileDescSet);
 					clientList[clientSocketIndex].FileDesc = -1;
-				}						            				
+				}
 				// no more readable descriptors
 				if (--readReadyCount <= 0)
-					break;        
+					break;
 			} //endif
 		} // endfor
 		// write to all clients
-		this->BroadcastMessages(clientList, listOfPackets);						            				
+		this->BroadcastMessages(clientList, listOfPackets);
    	} //endwhile
 }
 
@@ -116,14 +116,14 @@ Server::~Server()
 int Server::AddNewClient(const int listenSocket, ClientInfo* clientList)
 {
 	struct sockaddr_in clientInetAddress;
-	int clientSocket; 
+	int clientSocket;
 	socklen_t tempLen = sizeof clientInetAddress; //not used ever again
 	if ((clientSocket = accept((unsigned int)listenSocket, (struct sockaddr *) &clientInetAddress, &tempLen) ) == -1)
 		Die("Failed to accept:");
     cout << "* New client connected:" << inet_ntoa(clientInetAddress.sin_addr) << endl;
 	if (chatLogFile.is_open())
 		chatLogFile << "* New client connected:" << inet_ntoa(clientInetAddress.sin_addr) << endl;
-	
+
 	fcntl(clientSocket, F_SETFL, O_NONBLOCK);
     // incre thru clientList, set first available fd to new client
     // cannot use lastAlloc, bc previous client might have disconnected & left an opening
@@ -135,7 +135,7 @@ int Server::AddNewClient(const int listenSocket, ClientInfo* clientList)
 			clientList[i].FileDesc = clientSocket;	// save descriptor
 			clientList[i].IpAddress = string(inet_ntoa(clientInetAddress.sin_addr));
 			break;
-		}		    	
+		}
     }
 	return clientSocket;
 }
@@ -145,29 +145,29 @@ int Server::ReadClientMessage(const int clientSocket, ClientInfo* clientList, ve
 	int packetBytesRemaining = BUFLEN; //used for setting read size
 	int bytesJustRead; // used for ++bufferTail
 	int bytesTotalRead = 0; // if nothing read ->bytesJustRead=0, if everything read->bytesJustRead=0
-	char* recvBuffer = (char*)calloc(BUFLEN, sizeof(char)); 
+	char* recvBuffer = (char*)calloc(BUFLEN, sizeof(char));
 	char* bufferTail = recvBuffer;
 	while ((bytesJustRead = read(clientSocket, bufferTail, packetBytesRemaining)) > 0)
 	{
 		bufferTail += bytesJustRead;
 		bytesTotalRead += bytesJustRead;
 		packetBytesRemaining -= bytesJustRead;
-	} 
+	}
 	if (bytesTotalRead > 0)
 	{
-		//create packetized version of buffer on stack	
+		//create packetized version of buffer on stack
 		string noIpInfoPacket = string(recvBuffer);
 		int clientSocketIndex = this->GetFileDescIndex(clientSocket, clientList);
 		string completedPacket = GetIpedPacket(clientList[clientSocketIndex].IpAddress, noIpInfoPacket);
-		listOfPackets.push_back(completedPacket); 
+		listOfPackets.push_back(completedPacket);
 	}
 	//string constructor is deep copy, this is fine
-	free(recvBuffer); 
+	free(recvBuffer);
 	return bytesTotalRead;
 }
 
 void Server::BroadcastMessages(ClientInfo* clientList, vector<string>& listOfPackets)
-{	
+{
 	//cant go in forloop sadly
 	for (vector<string>::iterator msg = listOfPackets.begin() ; msg != listOfPackets.end(); ++msg)
 	{
@@ -185,11 +185,11 @@ void Server::BroadcastMessages(ClientInfo* clientList, vector<string>& listOfPac
 				}
 				else
 				{
-					SendPacket(clientList[i].FileDesc,*msg);	
+					SendPacket(clientList[i].FileDesc,*msg);
 				}
-			}			
+			}
 		}
-	}	
+	}
 	listOfPackets.clear();
 }
 
@@ -198,7 +198,7 @@ bool Server::HandleCommand()
 	string line;
 	cout << "(Enter cmd at any time): " << endl;
 	getline(cin, line);
-	
+
 	char cmdIndicator = '/';
 	if (line[0] == cmdIndicator)
 	{
@@ -209,21 +209,29 @@ bool Server::HandleCommand()
 		}
 		else if (cmd == "/disconnect" || cmd == "/d")
 		{
-			return false;		
+			return false;
 		}
 		else if (cmd == "/exit")
 		{
-			cout << "* Please /disconnect first. " << endl;		
+			cout << "* Please /disconnect first. " << endl;
 		}
 		else if (cmd == "/clients")
 		{
 			if (this->connectedList != nullptr)
+			{
+				int clientCount = 0;
 				for(int i = 0; i < FD_SETSIZE; ++i)
 				{
 					if (connectedList[i].FileDesc != -1 )
+					{
 						cout << "- " << connectedList[i].IpAddress << endl;
+						clientCount++;
+					}
 				}
-			else 
+				if (clientCount == 0)
+					cout << "No clients connected" << endl;
+			}
+			else
 				cout << "No clients connected" << endl;
 		}
 		else
