@@ -1,5 +1,10 @@
 #ifndef SERVER_H
 #define SERVER_H
+
+#ifndef BACKLOG
+#define BACKLOG 5
+#endif
+
 #include "SharedUtils.h"
 
 struct ClientInfo
