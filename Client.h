@@ -1,7 +1,8 @@
 #ifndef CLIENT_H
 #define CLIENT_H
-#include <errno.h>
+
 #include "SharedUtils.h"
+
 class Client
 {
 public:
