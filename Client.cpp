@@ -70,7 +70,6 @@ Client::Client()
 		Die("Failed to create socket to server");
 
 	struct hostent *serverHostent;
-	//if ((serverHostent = gethostbyaddr(serverIp.c_str(), sizeof(struct in_addr), AF_INET)) == NULL)
 	if ((serverHostent = gethostbyname(serverIp.c_str())) == NULL)
 		Die("Failed to get host, unknown server address");
 		
@@ -79,10 +78,9 @@ Client::Client()
 	serverInetAddress.sin_family = AF_INET;
 	serverInetAddress.sin_port = htons(serverPort);
 	serverInetAddress.sin_addr.s_addr = inet_addr(serverIp.c_str());
-	// memcpy(serverHostent->h_addr, (char *)&serverInetAddress.sin_addr, serverHostent->h_length); 
-	// ^ connect error: Address family not supported by protocol
+	// ^ connect error if use memcpy on serverHostent->h_addr: Address family not supported by protocol
 
-	// Connecting to the server (this blocks)
+	// Connecting to the server (this blocks for short time) 
 	if ( connect (serverSocket, (struct sockaddr *)&serverInetAddress, sizeof(serverInetAddress)) < 0)
 		Die("Failed to connect to server");
 	fcntl(serverSocket, F_SETFL, O_NONBLOCK);
@@ -91,14 +89,15 @@ Client::Client()
 	if (fileName != "")
 		chatLogFile.open(fileName);
 		
-	//PrintWelcomeMessage("CLIENT", serverHostent->h_name, chatLogFile.is_open());
 	PrintWelcomeMessage("CLIENT", chatLogFile.is_open(), GetCurrentIP(), serverHostent->h_name, serverPort);
 	thread clientThread(&Client::SelectLoop, this, serverSocket);
 	while(this->HandleNewline(serverSocket));
 	
 	keepSelecting = false;
 	clientThread.join();
-	SendPacket(serverSocket, "");
+	// 0byte packet w. TCP header, lets server know to close client
+	// only place this line is used
+	send(serverSocket, "", 0, 0); 
 	close(serverSocket);
 }
 
