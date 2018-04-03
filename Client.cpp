@@ -98,6 +98,7 @@ Client::Client()
 	
 	keepSelecting = false;
 	clientThread.join();
+	SendPacket(serverSocket, "");
 	close(serverSocket);
 }
 
@@ -196,7 +197,7 @@ bool Client::HandleNewline(const int serverSocket)
 	else
 	{
 		string noIpInfoPacket = GetTimestampedPacket(line);
-		SendPacket(serverSocket, noIpInfoPacket);
+		SendPacket(serverSocket, GetEncryptedString(noIpInfoPacket));
 		if (chatLogFile.is_open())
 			chatLogFile << "<Me>" << noIpInfoPacket << endl;
 	}
@@ -238,9 +239,10 @@ void Client::ReadServerMessage(const int serverSocket)
 	if (bytesTotalRead > 0)
 	{
 		// packet should be this format: <198.98.62.21><10:58:44>hello world
-		cout << recvBuffer << endl;
+		string decryptedMsg = GetDecryptedString(string(recvBuffer));
+		cout << decryptedMsg << endl;
 		if (chatLogFile.is_open())
-			chatLogFile << recvBuffer << endl;
+			chatLogFile << decryptedMsg << endl;
 	}
 	else 
 	{

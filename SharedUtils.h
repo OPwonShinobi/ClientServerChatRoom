@@ -37,4 +37,7 @@ string GetTimeString();
 string GetIpFromPacket(const string);
 string GetIpedPacket(const string, const string);
 string GetTimestampedPacket(const string);
+
+string GetEncryptedString(const string);
+string GetDecryptedString(const string);
 #endif

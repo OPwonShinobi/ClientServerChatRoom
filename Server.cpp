@@ -284,7 +284,7 @@ int Server::ReadClientMessage(const int clientSocket, ClientInfo* clientList, ve
 	if (bytesTotalRead > 0)
 	{
 		//create packetized version of buffer on stack
-		string noIpInfoPacket = string(recvBuffer);
+		string noIpInfoPacket = GetDecryptedString(string(recvBuffer));
 		int clientSocketIndex = this->GetFileDescIndex(clientSocket, clientList);
 		string completedPacket = GetIpedPacket(clientList[clientSocketIndex].IpAddress, noIpInfoPacket);
 		listOfPackets.push_back(completedPacket);
@@ -333,7 +333,7 @@ void Server::BroadcastMessages(ClientInfo* clientList, vector<string>& listOfPac
 				}
 				else
 				{
-					SendPacket(clientList[i].FileDesc,*msg);
+					SendPacket(clientList[i].FileDesc, GetEncryptedString(*msg));
 				}
 			}
 		}

@@ -23,6 +23,8 @@
 --		string GetIpFromPacket(const string);
 --		string GetIpedPacket(const string, const string);
 --		string GetTimestampedPacket(const string);
+--		string GetEncryptedString(const string);
+--		string GetDecryptedString(const string);
 --	
 -- NOTES:
 -- To avoid redundancy the shared pseudo-static functions used by both Server and Client (and even main) are stored here.
@@ -391,4 +393,58 @@ string GetIpedPacket(const string ip, const string timestampedPacket)
 string GetTimestampedPacket(const string msg)
 {
 	return "<" +  GetTimeString() + ">: " + msg;
+}
+
+/*------------------------------------------------------------------------------------------------------------------
+-- FUNCTION GetEncryptedString
+--
+-- DATE: Apr 2 2018
+--
+-- DESIGNER: Alex Xia
+--
+-- PROGRAMMER: Alex Xia
+--
+-- INTERFACE: string GetEncryptedString(const string msg)
+--					msg : msg to be encrypted
+--
+-- RETURNS: string : encrypted string msg
+--
+-- NOTES:
+-- Uses very basic Caesar cipher (offset = +1) to encrypt msg.  
+-- Used by both server & client before sending any message.
+-- eg. takes hello world and returns ifmmp!xpsme
+----------------------------------------------------------------------------------------------------------------------*/
+string GetEncryptedString(const string msg)
+{
+	string encryptedMsg = msg;
+	for(int i=0; encryptedMsg[i] != '\0'; ++i ) 
+		encryptedMsg[i]++;
+	return encryptedMsg;
+}
+
+/*------------------------------------------------------------------------------------------------------------------
+-- FUNCTION GetDecryptedString
+--
+-- DATE: Apr 2 2018
+--
+-- DESIGNER: Alex Xia
+--
+-- PROGRAMMER: Alex Xia
+--
+-- INTERFACE: string GetDecryptedString(const string encryptedMsg)
+--					msg : msg to be encrypted
+--
+-- RETURNS: string : encrypted string msg
+--
+-- NOTES:
+-- Uses very basic Caesar cipher (offset = -1) to decrypt a msg.  
+-- Used by both server & client after receiving any message.
+-- eg. takes ifmmp!xpsme and returns hello world 
+----------------------------------------------------------------------------------------------------------------------*/
+string GetDecryptedString(const string encryptedMsg)
+{
+	string decryptedMsg = encryptedMsg;
+	for(int i=0; decryptedMsg[i] != '\0'; ++i ) 
+		decryptedMsg[i]--;
+	return decryptedMsg; 	
 }
